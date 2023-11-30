@@ -1,0 +1,35 @@
+#!/bin/bash
+#Liam Blanton
+#Only works for positive Lats/Longs
+#Due to sin^2 and arcsin not being suported by bc
+#Trig substituions had to be made that doesn't make it work for all inputs
+
+#Latitudes and Longitudes in Degrees
+depLat=$(echo "(48.86)" | bc -l) #Departure Latitude
+depLong=$(echo "(2.35)" | bc -l) #Departure Longitude
+arrLat=$(echo "(52.52)" | bc -l) #Arrival Latitude
+arrLong=$(echo "(13.40)" | bc -l) #Arrival Latitude
+
+#Convert Lat/Longs to radians
+lat1=$(echo "($depLat*3.1415)/180" | bc -l)
+long1=$(echo "($depLong*3.1415)/180" | bc -l) 
+lat2=$(echo "($arrLat*3.1415)/180" | bc -l)
+long2=$(echo "($arrLong*3.1415)/180" | bc -l) 
+r=3959 #Radius of Earth in miles
+
+#Haversine formula implemented
+dLat=$(echo "$lat2-$lat1" | bc -l)
+dLong=$(echo "$long2-$long1" | bc -l)
+dLat=$(echo "sqrt($dLat^2)" | bc -l)
+dLong=$(echo "sqrt($dLong^2)" | bc -l)
+a=$(echo "(1-c($dLong))/2" | bc -l)
+a=$(echo "sqrt($a^2)" | bc -l)
+y=$(echo "(1-c($dLat))/2" | bc -l)
+y=$(echo "sqrt($y^2)" | bc -l)
+z=$(echo "c($lat1)*c($lat2)*($a)" | bc -l)
+h=$(echo "$y+$z" | bc -l)
+x=$(echo "sqrt($h)" | bc -l)
+distance=$(echo "2*$r*a($x/(sqrt(1-$h)))" | bc -l)
+
+#Output
+echo $distance
